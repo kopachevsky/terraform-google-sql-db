@@ -79,3 +79,9 @@ variable "additional_users" {
   }))
   default = []
 }
+
+variable "root_password" {
+  description = "MSSERVER password for the root user. If not set, a random one will be generated and available in the root_password output variable."
+  type        = string
+  default     = ""
+}

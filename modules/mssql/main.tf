@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
+resource "random_id" "root-password" {
+  keepers = {
+    name = var.db_name
+  }
+
+  byte_length = 8
+}
 
 resource "google_sql_database_instance" "default" {
   project          = var.project_id
   name             = var.db_name
   database_version = var.database_version
   region           = var.region
+  root_password    = coalesce(var.root_password, random_id.root-password.hex)
 
   settings {
     tier = var.tier
@@ -47,7 +55,7 @@ resource "google_sql_user" "default" {
   name       = var.user_name
   project    = var.project_id
   instance   = google_sql_database_instance.default.name
-  password   = var.user_password == "" ? random_id.user-password.hex : var.user_password
+  password   = coalesce(var.user_password, random_id.user-password.hex)
   depends_on = [google_sql_database_instance.default]
 }
 
